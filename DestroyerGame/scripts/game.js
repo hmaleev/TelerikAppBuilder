@@ -8,7 +8,8 @@ window.requestAnimFrame = (function(){
 })();
 
 var lastTime;
- var obstacles = [];
+var obstacles = [];
+var counter=0;
 function startGame() {
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
@@ -109,6 +110,7 @@ function startGame() {
     
      function update(dt) {
         // debugger;
+      
         if (player.x  >= 0  && player.x  < 270 ) {
             if (direction === "left") {
                 player.x -= 2 ;
@@ -137,9 +139,14 @@ function startGame() {
         obstacles = obstacles.filter(function (obstacle) {
             return obstacle.active;
         });
-
-        if (Math.random() < 0.01) {
+        counter++;
+        if (counter ===100) {
             obstacles.push(Obstacle());
+            counter=0;
+            var red = Math.floor(Math.random() *255);
+            var green = Math.floor(Math.random() *255);
+            var blue = Math.floor(Math.random() *255);
+          $('#canvas').css('background-color', 'rgba('+red+', '+green+', '+blue+', 1)');
         }
     }
     
