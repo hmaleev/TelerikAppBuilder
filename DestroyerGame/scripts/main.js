@@ -11,7 +11,6 @@ homepage.show();
 newGameView.hide();
 settingsView.hide();
 highScoresView.hide();
-
 newGameBtn.click(function (){
     
     homepage.hide();

@@ -35,9 +35,6 @@ function startGame() {
       //      alert("error");
         });
     
-      function onDeviceReady() {
-        navigator.accelerometer.getCurrentAcceleration(onSuccess, onError);
-    }
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;    
     var c = document.getElementById("canvas");
@@ -45,9 +42,7 @@ function startGame() {
    
     var CANVAS_WIDTH = c.width;
     var CANVAS_HEIGHT = c.height;
-  //  var ship = document.getElementById("ship")
-  //  alert("executed: ");
-   // debugger;
+
         var player = {
             name: playerName,
             width: 45,
@@ -66,15 +61,18 @@ function startGame() {
             explode: function () {
                 this.active = false;
                 navigator.notification.vibrate(400);
-                navigator.notification.confirm(
-                'Do you want to play another game?',
-                 onConfirm,
-                'Game Over',
-                ['No', 'Yes']);
+                navigator.notification.confirm('Do you want to play another game?', function(buttonIndex) {
+                    alert(buttonIndex);
+                    if (buttonIndex === 0) {
+                        alert("new game");
+                        player.active = true;
+                        enemies = [];
+                    }
+                },'Game Over', ['No', 'Yes']);
             }
         }
   //  player.draw();
-  //  player.explode();
+    //player.explode();
      
     
     
@@ -118,17 +116,7 @@ function startGame() {
         };
         return I;
     };
-
-
-    function onConfirm(buttonIndex) {
-
-        if (buttonIndex === 0) {
-            alert("new game");
-            player.active = true;
-            enemies = [];
-        }
-    }
-    
+   
      function update(dt) {
         // debugger;
     //  alert("updated direction: "+direction);
@@ -138,6 +126,7 @@ function startGame() {
                 console.log(x);
                 player.x = x ;
               //  alert("dir left"+player.x);
+                
             }
 
             if (direction === "right") {
@@ -183,7 +172,7 @@ function startGame() {
             return obstacle.active;
         });
         counter++;
-        if (counter ===100) {
+        if (counter ===40) {
             obstacles.push(Obstacle());
             counter=0;
            
@@ -197,22 +186,33 @@ function startGame() {
             obstacles.forEach(function (obstacle) {
                 obstacle.draw();
             });
-       // handleCollisions();
+        handleCollisions();
     }
     
         function collides(a, b) {
-            var x1 = a.x < b.x + b.width ;
+            var x1 = a.width  < b.x  ;
+            var x2 =a.width +80 >b.x;
+            var y1 =a.y===416;
            // var x2 =  a.x + a.width > b.x;
            // var y1 = a.y < b.y + b.height;
            // var y2 = a.y + a.height > b.y;
-        return x1 ;
+            if (x1 ===false && y1) {
+                alert("a.width: "+ a.width +"b.x: "+b.x);
+                return true;
+            }
+            if (x2 === false && y1) {
+                      alert("a.width: "+ a.width +" | b.x: "+b.x);
+                return true;
+            }
+            return false;
+       // return x1 && x2 && y1 ;
                
     }
 
     function handleCollisions() {
 
         obstacles.forEach(function (obstacle) {
-            if (collides(obstacle, player)) {
+            if (collides(obstacles[0], player)) {
                 Score();
                 enemy.explode();
                 player.explode();
@@ -221,37 +221,6 @@ function startGame() {
     }
     //----------------------------------
     
-        // Wait for device API libraries to load
-    //
-  
-    // device APIs are available
-    //
-  
-
-    // onSuccess: Get a snapshot of the current acceleration
-    //
-    function onSuccess(acceleration) {
-       /* alert('Acceleration X: ' + acceleration.x + '\n' +
-              'Acceleration Y: ' + acceleration.y + '\n' +
-              'Acceleration Z: ' + acceleration.z + '\n' +
-              'Timestamp: '      + acceleration.timestamp + '\n');*/
-        
-        if (acceleration.x > 1.8) {
-            direction = "left";
-            alert(direction);
-            
-        }
-        else if (acceleration.x < -1.8) {
-            direction = "right";
-             //  alert(direction);
-        }
-    }
-
-    // onError: Failed to get the acceleration
-    //
-    function onError() {
-        //alert('onError!');
-    }
     
     //---------------------------------
     
