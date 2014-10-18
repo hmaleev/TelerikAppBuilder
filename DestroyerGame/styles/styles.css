@@ -1,0 +1,7 @@
+body {
+     background-color:green;
+}
+#newGameBtn, #settingsBtn, #highScoresBtn {
+  display:block;
+  margin:10%;
+}
