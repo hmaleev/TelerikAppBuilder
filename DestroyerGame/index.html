@@ -4,7 +4,7 @@
     <title></title>
     <meta charset="utf-8" />
     <link href="kendo/styles/kendo.mobile.all.min.css" rel="stylesheet" />
-    <link href="kendo/styles/styles.css" rel="stylesheet" />
+    <link href="styles/styles.css" rel="stylesheet" />
 
     <script src="cordova.js"></script>
     <script src="kendo/js/jquery.min.js"></script>
@@ -12,23 +12,51 @@
     
 </head>
 <body>
-    <ul>
-        <li>
-            <ul>
-                <li><a href="views/game.html#game-view">New Game</a></li>
-                <li><a href="views/localHighScores.html#scores-view"> High Scores</a></li>
-                <li><a href="views/settings.html#settings-view">Settings</a></li>
+    <div data-role="view">
+        <div id="homepage">
+            <a data-role="button" id="newGameBtn">New Game</a>
+            <a data-role="button" id="highScoresBtn"> High Scores</a>
+            <a data-role="button" id="settingsBtn">Settings</a>
+        </div>
+        
+        <div id="gameView">
+             <p>Game</p>
+             <canvas id="canvas">Canvas is not supported</canvas>
+        </div>
+        <div id="localHighScoresView">
+            <p>HighScores</p>
+        </div>
+        <div id="settingsView">
+            <ul data-role="listview" data-style="inset" data-type="group">
+                <li>Gameplay
+                    <ul>
+                        <li>
+                            <div > Automatic shooting
+                                <input type="checkbox" data-role="switch" data-checked="true" />
+                            </div>
+                        </li>
+                         <li>
+                            <label>
+                                Player name: 
+                                <input type="text" id="playerName" />
+                            </label>
+                        </li>
+                    </ul>
+                </li>
+                <li>High scores
+                    <ul>
+                        <li>
+                            <div class="button" data-role="button" id="DeleteHighScoresBtn">Delete all local high scores</div>
+                        </li>
+                    </ul>
+                </li>
             </ul>
-        </li>
-    </ul>
-    <div id="gameView">
-        
+        </div>
     </div>
-    <div id="localHighScoresView">
-        
-    </div>
-    <div id="settingsView">
-        
-    </div>
+    
+    <script>
+        var app = new kendo.mobile.Application();
+    </script>
+    <script src="scripts/main.js"></script>
 </body>
 </html>
