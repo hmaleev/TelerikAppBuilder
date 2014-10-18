@@ -10,15 +10,39 @@ window.requestAnimFrame = (function(){
 var lastTime;
 var obstacles = [];
 var counter=0;
-function startGame() {
-    var now = Date.now();
-    var dt = (now - lastTime) / 1000.0;
+var direction = null;
+var x=160;
+var y=0;
 
+
+
+function startGame() {
     
+       navigator.accelerometer.getCurrentAcceleration(function (acceleration) {
+            if (acceleration.x > 1.8) {
+            direction = "left";
+        //    alert(direction);
+            
+        }
+            else if (acceleration.x < -1.8) {
+                direction = "right";
+             //   alert(direction);
+            }
+           else if (acceleration.x < 1.8 && acceleration.x > 0) {
+               direction = null;
+           }
+        } , function(){
+      //      alert("error");
+        });
     
+      function onDeviceReady() {
+        navigator.accelerometer.getCurrentAcceleration(onSuccess, onError);
+    }
+    var now = Date.now();
+    var dt = (now - lastTime) / 1000.0;    
     var c = document.getElementById("canvas");
     var ctx = c.getContext("2d");
-    var direction = null;
+   
     var CANVAS_WIDTH = c.width;
     var CANVAS_HEIGHT = c.height;
   //  var ship = document.getElementById("ship")
@@ -26,17 +50,15 @@ function startGame() {
    // debugger;
         var player = {
             name: playerName,
-            x: 125,
-            y: 130,
             width: 45,
             height: 15,
             score: 0,
             active: true,
             draw: function () {
                 ctx.beginPath();
-                ctx.moveTo(140,430);
-                ctx.lineTo(150,420);
-                ctx.lineTo(160,430);
+                ctx.moveTo(this.x-10,this.y);
+                ctx.lineTo(this.x,this.y-10);
+                ctx.lineTo(this.x+10,this.y);
                 ctx.closePath();
                 ctx.fill();
                // canvas.drawImage(ship, 0, 9, 95, 87, player.x, player.y, player.width, player.height);
@@ -51,7 +73,7 @@ function startGame() {
                 ['No', 'Yes']);
             }
         }
-    player.draw();
+  //  player.draw();
   //  player.explode();
      
     
@@ -68,13 +90,12 @@ function startGame() {
         I.xVelocity = 0;
        // I.yVelocity = Math.random() * 2;
 
-         I.yVelocity =1;
+         I.yVelocity =2;
         I.width = Math.random() *(CANVAS_WIDTH -80);
         I.height = 10;
 
         I.inBounds = function () {
-            return I.x >= 0 && I.x <= CANVAS_WIDTH &&
-              I.y >= 0 && I.y <= CANVAS_HEIGHT;
+            return  I.y >= 0 && I.y <= CANVAS_HEIGHT;
         };
 
         I.draw = function () {
@@ -86,10 +107,10 @@ function startGame() {
         };
 
         I.update = function () {
-            I.x += I.xVelocity;
             I.y += I.yVelocity;
 
             I.active = I.active && I.inBounds();
+            
         };
         I.explode = function () {
             this.active = false;
@@ -110,30 +131,52 @@ function startGame() {
     
      function update(dt) {
         // debugger;
-      
-        if (player.x  >= 0  && player.x  < 270 ) {
+    //  alert("updated direction: "+direction);
+        if (x  > 0  && x  < CANVAS_WIDTH ) {
             if (direction === "left") {
-                player.x -= 2 ;
+                x-=4;
+                console.log(x);
+                player.x = x ;
+              //  alert("dir left"+player.x);
             }
 
             if (direction === "right") {
-                player.x += 2 ;
+                x+=4;
+                console.log(x);
+                player.x = x ;
+//                 alert("dir right"+player.x);
             }
+            if (direction === null) {
+                x+=0;
+                console.log(x);
+                player.x = x ;
+//                 alert("dir right"+player.x);
+            }
+            
         }
         else {
-            if (player.x <= 0) {
-                player.x = 0 ;
+            if (x <= 0) {
+                x = 0 ;
+                player.x =x+10
             }
-            if (player.x >= 269) {
-                player.x = 269 ;
+            if (x >= CANVAS_WIDTH) {
+                x = CANVAS_WIDTH ;
+                player.x = x-10;
             }
         }
 
 
 
         obstacles.forEach(function (obstacle) {
-            debugger;
+          //  debugger;
             obstacle.update();
+            if (!obstacle.active) {
+                obstacles.splice(0,1);
+                 var red = Math.floor(Math.random() *255);
+            var green = Math.floor(Math.random() *255);
+            var blue = Math.floor(Math.random() *255);
+          $('#canvas').css('background-color', 'rgba('+red+', '+green+', '+blue+', 1)');
+            }
         });
 
         obstacles = obstacles.filter(function (obstacle) {
@@ -143,25 +186,84 @@ function startGame() {
         if (counter ===100) {
             obstacles.push(Obstacle());
             counter=0;
-            var red = Math.floor(Math.random() *255);
-            var green = Math.floor(Math.random() *255);
-            var blue = Math.floor(Math.random() *255);
-          $('#canvas').css('background-color', 'rgba('+red+', '+green+', '+blue+', 1)');
+           
         }
     }
     
         function draw() {
             ctx.clearRect(0, 0, 500, 500);
+           
             player.draw();
             obstacles.forEach(function (obstacle) {
                 obstacle.draw();
             });
-     //   handleCollisions();
+       // handleCollisions();
     }
+    
+        function collides(a, b) {
+            var x1 = a.x < b.x + b.width ;
+           // var x2 =  a.x + a.width > b.x;
+           // var y1 = a.y < b.y + b.height;
+           // var y2 = a.y + a.height > b.y;
+        return x1 ;
+               
+    }
+
+    function handleCollisions() {
+
+        obstacles.forEach(function (obstacle) {
+            if (collides(obstacle, player)) {
+                Score();
+                enemy.explode();
+                player.explode();
+            }
+        });
+    }
+    //----------------------------------
+    
+        // Wait for device API libraries to load
+    //
+  
+    // device APIs are available
+    //
+  
+
+    // onSuccess: Get a snapshot of the current acceleration
+    //
+    function onSuccess(acceleration) {
+       /* alert('Acceleration X: ' + acceleration.x + '\n' +
+              'Acceleration Y: ' + acceleration.y + '\n' +
+              'Acceleration Z: ' + acceleration.z + '\n' +
+              'Timestamp: '      + acceleration.timestamp + '\n');*/
+        
+        if (acceleration.x > 1.8) {
+            direction = "left";
+            alert(direction);
+            
+        }
+        else if (acceleration.x < -1.8) {
+            direction = "right";
+             //  alert(direction);
+        }
+    }
+
+    // onError: Failed to get the acceleration
+    //
+    function onError() {
+        //alert('onError!');
+    }
+    
+    //---------------------------------
+    
+     if(player.x === undefined || player.y === undefined) {
+                player.x= 150;
+                player.y= 430;
+            }
     
     update(dt);
     draw();
 
     lastTime = now;
     requestAnimFrame(startGame);
+    
 };
