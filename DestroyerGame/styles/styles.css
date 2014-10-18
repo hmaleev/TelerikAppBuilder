@@ -5,3 +5,30 @@ body {
   display:block;
   margin:10%;
 }
+#canvas{
+   
+    background-color:#3333ff;
+    margin:0;
+    padding:0;
+}
+#leftControl,#rightControl{
+    display:inline-block;
+    width:49%;
+    background:red;
+    margin:0;
+    padding:0;
+
+}
+
+#rightBtnMove{
+    float:right;
+    background:#fff;
+}
+#leftBtnMove{
+    float:left;
+}
+#ship,#asteroid {
+    display: none;
+    max-width: 50px;
+    max-height: 42px;
+}

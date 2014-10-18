@@ -18,7 +18,7 @@ newGameBtn.click(function (){
     newGameView.show();
     settingsView.hide();
     highScoresView.hide();
-     show();
+     startGame();
 });
 
 highScoresBtn.click(function (){
