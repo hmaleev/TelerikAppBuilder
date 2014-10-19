@@ -28,16 +28,32 @@
         </div>
         <div id="localHighScoresView">
             <p>HighScores</p>
+            <ul data-role="listview" data-source="foo" data-template="foo-template">
+            </ul>
+
+            <script type="text/x-kendo-template" id="foo-template">
+            #: data #
+            </script>
+
+            <script>
+                 var records = window.localStorage.getItem("records");
+                 var highscores = [];
+                 
+                  if (records !== null) {
+                     highscores = JSON.parse(records);
+                  }
+                if(highscores.length>5) {
+                    highscores.sort(function(a, b){return b-a});
+                    highscores = highscores.slice(0,5);
+                }
+                var foo = new kendo.data.DataSource({ data: highscores });
+            new kendo.mobile.Application();
+            </script>
         </div>
         <div id="settingsView">
             <ul data-role="listview" data-style="inset" data-type="group">
                 <li>Gameplay
                     <ul>
-                        <li>
-                            <div > Automatic shooting
-                                <input type="checkbox" data-role="switch" data-checked="true" />
-                            </div>
-                        </li>
                          <li>
                             <label>
                                 Player name: 

@@ -42,6 +42,7 @@ var Game = ( function( window, undefined ) {
                     alert("new game");
                     player.active = true;
                     obstacles = [];
+                    Score(player.score);
                     startGame();
                     return true;
                 }
@@ -49,10 +50,27 @@ var Game = ( function( window, undefined ) {
                 	alert("Game Over");
                     player.active = false;
                     obstacles = [];
+                    Score(player.score);
                     return false;
                 }
             },'Game Over', ['No', 'Yes']);
         }
+    }
+    function Score(record){
+    
+          var records = window.localStorage.getItem("records");
+          var highscores = [];
+          if (records !== null) {
+             content = JSON.parse(records);
+             content.push(record);
+             content.sort(function(a, b){return b-a});
+             window.localStorage.setItem('records',JSON.stringify(content));
+          }
+          else {
+              highscores.push(record);
+              window.localStorage.setItem('records',JSON.stringify(highscores));
+              return;
+          }
     }
     
     function Obstacle(I)    
