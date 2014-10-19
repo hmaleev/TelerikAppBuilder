@@ -18,7 +18,8 @@ newGameBtn.click(function (){
     settingsView.hide();
     highScoresView.hide();
     document.addEventListener("deviceready", function() { },false);
-     startGame();
+     //startGame();
+    Game.play();
 });
 
 highScoresBtn.click(function (){
