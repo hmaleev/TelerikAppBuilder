@@ -6,9 +6,6 @@ window.requestAnimFrame = (function(){
             window.setTimeout(callback, 1000 / 60);
           };
 })();
-
-//--------------------------------------------------------------------
-
 var Game = ( function( window, undefined ) {
     
     var obstacles = [];
@@ -21,7 +18,7 @@ var Game = ( function( window, undefined ) {
     var CANVAS_WIDTH = c.width;
     var CANVAS_HEIGHT = c.height;
 
-    
+    var newgame = false;
     var player = {
         name: playerName,
         width: 45,
@@ -39,12 +36,20 @@ var Game = ( function( window, undefined ) {
         explode: function () {
             this.active = false;
             navigator.notification.vibrate(400);
-            navigator.notification.confirm('Do you want to play another game?', function(buttonIndex) {
+          navigator.notification.confirm('Do you want to play another game?', function(buttonIndex) {
                 alert(buttonIndex);
-                if (buttonIndex === 0) {
+                if (buttonIndex === 2) {
                     alert("new game");
                     player.active = true;
-                    enemies = [];
+                    obstacles = [];
+                    startGame();
+                    return true;
+                }
+                else {
+                	alert("Game Over");
+                    player.active = false;
+                    obstacles = [];
+                    return false;
                 }
             },'Game Over', ['No', 'Yes']);
         }
@@ -78,13 +83,13 @@ var Game = ( function( window, undefined ) {
         };
         I.explode = function () {
             this.active = false;
-            player.score += 100;
+          
         };
         return I;
     };
 
     function update() {
-        if (x  > 0  && x  < CANVAS_WIDTH ) {
+        if (x  > 10  && x  < CANVAS_WIDTH-10 ) {
             if (direction === "left") {
                 x-=4;
                 console.log(x);
@@ -103,13 +108,13 @@ var Game = ( function( window, undefined ) {
             }
         }
         else {
-            if (x <= 0) {
-                x = 0 ;
-                player.x =x+10
+            if (x < 10) {
+                x = 10.0001 ;
+                player.x =x
             }
-            if (x >= CANVAS_WIDTH) {
-                x = CANVAS_WIDTH ;
-                player.x = x-10;
+            if (x >= CANVAS_WIDTH-10) {
+                x = CANVAS_WIDTH -10.0001 ;
+                player.x = x;
             }
         }
 
@@ -121,6 +126,7 @@ var Game = ( function( window, undefined ) {
                 var green = Math.floor(Math.random() *255);
                 var blue = Math.floor(Math.random() *255);
                 $('#canvas').css('background-color', 'rgba('+red+', '+green+', '+blue+', 1)');
+                player.score +=10;
             }
         });
 
@@ -148,11 +154,11 @@ var Game = ( function( window, undefined ) {
             var x2 =a.width +80 >b.x;
             var y1 =a.y===416;
             if (x1 ===false && y1) {
-                alert("a.width: "+ a.width +"b.x: "+b.x);
+            //    alert("a.width: "+ a.width +"b.x: "+b.x);
                 return true;
             }
             if (x2 === false && y1) {
-                      alert("a.width: "+ a.width +" | b.x: "+b.x);
+            //          alert("a.width: "+ a.width +" | b.x: "+b.x);
                 return true;
             }
             return false;
@@ -163,8 +169,9 @@ var Game = ( function( window, undefined ) {
         obstacles.forEach(function (obstacle) {
             if (collides(obstacles[0], player)) {
                // Score();
-                enemy.explode();
+                obstacles[0].explode();
                 player.explode();
+                obstacles =[];
             }
         });
     }
@@ -192,15 +199,23 @@ var Game = ( function( window, undefined ) {
         player.x= 150;
         player.y= 430;
     }
-    update();
-    draw();
+        if (newgame ===true) {
+            startGame();
+        }
+        if(player.active ===true) {
+            update();
+            draw();
+        }
 
-    lastTime = now;
+  //  lastTime = now;
     requestAnimFrame(startGame);
     
 };
     // explicitly return public methods when this object is instantiated
     return {
     play : startGame,
+        resetPlayer: function() {
+            player.active =true;
+        }
     };
 } )( window );
